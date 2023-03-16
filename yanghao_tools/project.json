@@ -1,0 +1,16 @@
+{
+    "name": "养号助手",
+    "versionName": "1.2.1",
+    "versionCode": 121,
+    "main": "ui.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.nice.yanghao.helper",
+    "launchConfig": {
+        "stableMode": true,
+        "splashText": "养号助手",
+        "splashIcon": "./logo-text.png"
+    },
+    "icon": "./logo.png"
+}

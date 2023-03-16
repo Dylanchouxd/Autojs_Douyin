@@ -1,0 +1,16 @@
+{
+    "name": "互动助手",
+    "versionName": "1.0.2",
+    "versionCode": 102,
+    "main": "ui.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.nice.interactive.helper",
+    "launchConfig": {
+        "stableMode": true,
+        "splashText": "互动助手",
+        "splashIcon": "./logo-text.png"
+    },
+    "icon": "./logo.png"
+}

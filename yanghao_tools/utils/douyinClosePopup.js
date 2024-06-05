@@ -12,6 +12,7 @@ function main () {
       closeFindTelFriends()
       closeRecommentMoreLive()
       closeRecommentFriends()
+      closeSetNickName()
     }
   })
 }
@@ -46,7 +47,7 @@ function closeUpdatePopup () {
 function closeYouthMode () {
   if (text("开启青少年模式").exists()) {
     log("发现青少年模式弹窗")
-    click("我知道了")
+    click("关闭")
     toastLog("关闭青少年模式弹窗完成")
     sleep(1000)
   }
@@ -65,13 +66,13 @@ function closeCommentAtmosphere () {
 }
 
 /**
- * 发现通讯录朋友弹窗
+ * 访问你的通讯录弹窗
  */
 function closeFindTelFriends () {
-  if (text("发现通讯录朋友").exists()) {
-    log("发现 发现通讯录朋友 弹窗")
+  if (text("抖音 想访问你的通讯录").exists()) {
+    log("发现 访问你的通讯录 弹窗")
     click("拒绝")
-    toastLog("关闭 发现通讯录朋友 弹窗完成")
+    toastLog("关闭 访问你的通讯录 弹窗完成")
     sleep(1000)
   }
 }
@@ -96,6 +97,18 @@ function closeRecommentFriends () {
     log("发现 朋友推荐 弹窗")
     desc("关闭").click()
     toastLog("关闭 朋友推荐 弹窗完成")
+    sleep(1000)
+  }
+}
+
+/**
+ * 设置昵称和头像
+ */
+function closeSetNickName () {
+  if (text("设置昵称和头像，更好地表达你的意见").exists()) {
+    log("发现 设置昵称和头像 弹窗")
+    desc("关闭").click()
+    toastLog("关闭 设置昵称和头像 弹窗完成")
     sleep(1000)
   }
 }

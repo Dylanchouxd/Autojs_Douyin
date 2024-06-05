@@ -1,7 +1,7 @@
 {
     "name": "养号助手",
-    "versionName": "1.2.1",
-    "versionCode": 121,
+    "versionName": "1.3.0",
+    "versionCode": 130,
     "main": "ui.js",
     "ignore": [
         "build"

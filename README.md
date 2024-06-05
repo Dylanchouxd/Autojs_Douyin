@@ -20,3 +20,29 @@
 
 1. 下载 AUTOX 的APK，https://github.com/kkevsekk1/AutoX/releases
 2. 把项目的脚本文件夹传输进去，然后在AUTOX APK上运行脚本
+
+## 当前版本适配
+
+## 抖音
+
+[v30.1.0 版本](https://github.com/Dylanchouxd/Autojs_Douyin/releases/tag/1.1.0)
+
+[v22.7.0 版本](https://github.com/Dylanchouxd/Autojs_Douyin/releases/tag/1.0.0)
+
+## 快手
+
+[v10.9.21.28058 版本](https://github.com/Dylanchouxd/Autojs_Douyin/releases/tag/1.0.0)
+
+## 版本适配教程
+
+首先，脚本中使用了 APP 的元素 ID 去匹配对应的操作位置，正常来说只要 APP 不更新，脚本就是正常的。
+
+每次 APP 更新，对应的元素 ID 都会更新，所以说每次 `APP更新脚本就会失效` 。
+
+这时候我们就要`更新对应操作位置的 ID` 。
+
+### 教程
+
+目前我将所有的控件ID都整理在 [utils/widget.js](https://github.com/Dylanchouxd/Autojs_Douyin/blob/main/yanghao_tools/utils/widget.js)，对应的控件位置可以看图片 [statics](https://github.com/Dylanchouxd/Autojs_Douyin/tree/main/statics)，适配版本的话，更新对应控件的 ID 就好了。
+
+但是有可能当APP版本更新后，原来的控件 id 不能获取到了，这时候就只能是改对应的逻辑，使用其他控件去实现对应的功能了，这时候就要靠自己去探索了。

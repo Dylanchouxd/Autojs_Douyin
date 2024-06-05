@@ -79,28 +79,6 @@ function randomSleep (time, speed) {
 }
 
 /**
- * 随机滑动
- */
-function randomSwipe (time) {
-  time = time || ramdomByFloat(300)
-  const width = device.width;
-  const height = device.height;
-
-  smlMove(ramdomByFloat(width / 2), ramdomByFloat(height / 1.5), ramdomByFloat(width / 2), ramdomByFloat(height / 4), time);
-}
-
-/**
- * 直播间随机滑动
- */
-function liveSwipe (time) {
-  time = time || ramdomByFloat(300)
-  const width = device.width;
-  const height = device.height;
-
-  smlMove(ramdomByFloat(460), ramdomByFloat(900), ramdomByFloat(500), ramdomByFloat(320), time);
-}
-
-/**
  * 范围随机数生成
  * @param min
  * @param max
@@ -175,59 +153,57 @@ function bezierCurves (cp, t) {
   return result;
 };
 
-// smlMove(ramdomByFloat(460), ramdomByFloat(900), ramdomByFloat(480), ramdomByFloat(220), 300);
+function strToNumber (val) {
+  if (val.indexOf('w') !== -1) {
+    return Number(val.split('w')[0]) * 10000
+  } else if (val.indexOf('万') !== -1) {
+    return Number(val.split('万')[0]) * 10000
+  }
 
-// if (id("com.smile.gifmaker:id/popup_view").exists()) {
-//   log("发现广告弹窗")
-//   id("com.smile.gifmaker:id/close_btn").click()
-//   toastLog("关闭广告弹窗完成")
-//   sleep(1000)
-// }
+  // 处理特殊关键词
+  if (val === '抢首评') {
+    return 0
+  }
 
-
-// if (id("com.smile.gifmaker:id/live_merchant_container_root_view").exists()) {
-//   log("发现播间红包弹窗")
-//   id("com.smile.gifmaker:id/live_merchant_container_close_view").click()
-//   toastLog("关闭播间红包弹窗完成")
-//   sleep(1000)
-// }
-
-// back()
-
-// randomSleep(5000)
-// let nowLivePersonAmount = ''
-// id("com.smile.gifmaker:id/live_audience_count_text").find().forEach((val) => {
-//   if (val.text()) {
-//     nowLivePersonAmount = val.text()
-//   }
-// })
-
-// log(nowLivePersonAmount)
-
-// const nowLivePersonAmountEl = id("com.smile.gifmaker:id/live_audience_count_text").
-// const nowLivePersonAmount = nowLivePersonAmountEl ? Number(strToNumber(nowLivePersonAmountEl.text())) : ''
-// log("直播间人数：", nowLivePersonAmount)
-// log(nowLivePersonAmountEl.text())
-// log(id("com.smile.gifmaker:id/live_audience_count_text").find())
-
-// let nowLivePersonAmount = ''
-// id("com.smile.gifmaker:id/live_audience_count_text").waitFor()
-// id("com.smile.gifmaker:id/live_audience_count_text").find().forEach((val) => {
-//   if (val.text()) {
-//     nowLivePersonAmount = Number(strToNumber(val.text()))
-//   }
-// })
-
-// log(nowLivePersonAmount)
-
-// const nowLivePersonAmountEl = id("com.smile.gifmaker:id/live_audience_count_text").visibleToUser().findOne(5000)
-// const nowLivePersonAmount = nowLivePersonAmountEl ? Number(strToNumber(nowLivePersonAmountEl.text())) : ''
-// log("直播间人数：", nowLivePersonAmount)
-
-// if (text('没有更多作品').exists()) {
-//   toastLog("退出脚本，没有更多作品")
-// }
-
-if (id("com.smile.gifmaker:id/title_tv").exists() && text("请完成安全验证").exists()) {
-  toastLog("完成安全验证后脚本会自动继续")
+  return val
 }
+// douyin
+const homePageWidget = 'com.ss.android.ugc.aweme:id/wwb' // 首页按钮控件
+const likeWidget = 'com.ss.android.ugc.aweme:id/ev4' // 视频点赞按钮控件
+const commentWidget = 'com.ss.android.ugc.aweme:id/c+1' // 评论按钮控件
+const commentPopupWidget = 'com.ss.android.ugc.aweme:id/tqf' // 评论框弹窗界面
+const commentInputWidget = 'com.ss.android.ugc.aweme:id/c7p' // 评论输入框控件
+const commentInputSendWidget = 'com.ss.android.ugc.aweme:id/c=1' // 评论发送控件
+const commentCloseWidget = 'com.ss.android.ugc.aweme:id/back_btn' // 评论关闭控件
+const collectWidget = 'com.ss.android.ugc.aweme:id/c32' // 收藏按钮控件
+const liveClose = 'com.ss.android.ugc.aweme:id/root' // 关闭直播间
+const livePersonAmountWidget = 'com.ss.android.ugc.aweme:id/p25' // 直播间人数控件
+const liveUserCommentWidget = 'com.ss.android.ugc.aweme:id/text' // 直播间用户评论控件
+const liveUserPopupTopWidget = 'com.ss.android.ugc.aweme:id/yc_' // 直播间用户详情上面区域
+const liveUserPopupBottomWidget = 'com.ss.android.ugc.aweme:id/x7z' // 直播间用户详情下面区域
+const liveUserFocusWidget = 'com.ss.android.ugc.aweme:id/09h' // 直播间用户详情关注数
+const liveUserFansWidget = 'com.ss.android.ugc.aweme:id/09l' // 直播间用户详情粉丝数
+const liveUserAvatar = 'com.ss.android.ugc.aweme:id/pm7' // 直播间用户详情头像
+const liveUserInfoAreaWidget = 'com.ss.android.ugc.aweme:id/qfa' // 直播间进入用户详情页资料信息区域
+const liveUserInfoPageWidget = 'com.ss.android.ugc.aweme:id/r8y' // 直播间用户详情页页面
+const searchContainerWidget = 'com.ss.android.ugc.aweme:id/qcx' // 搜索框外层容器控件
+const searchInputWidget = 'com.ss.android.ugc.aweme:id/et_search_kw' // 搜索页输入框控件
+const searchButtonWidget = 'com.ss.android.ugc.aweme:id/z5o' // 搜索框搜索按钮控件
+const searchTagWidget = 'android:id/text1' // 搜索页标签分类控件
+const searchVideoWidget = 'com.ss.android.ugc.aweme:id/ttf' // 搜索页视频控件
+
+function closeCommentPopup () {
+  // 先判断是否在评论输入弹层上，是的话则先返回
+  if (desc('插入图片').exists() && desc('at').exists() && desc('表情').exists()) {
+    back()
+    randomSleep(300)
+  }
+  
+  // 然后判断输入框评论列表是否存在，存在就关闭
+  if (id(commentPopupWidget).exists()) {
+    id(commentCloseWidget).findOne().click()
+    randomSleep(1000)
+  }
+}
+
+closeCommentPopup()

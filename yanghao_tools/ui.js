@@ -7,7 +7,7 @@ const storageNewConfig = require('./config/storageNew');
 const storageKsYanghaoConfig = require('./config/storageKsYanghao');
 const Utils = require('./utils/util')
 const dayjs = require('./utils/dayjs.1.11.6.min')
-const fillAppVersion = '22.7.0' // 适配的版本
+const fillAppVersion = '30.1.0' // 适配的版本
 const fillKsAppVersion = '10.9.21.28058' // 适配的版本
 let isFillVer = true // 是否适配版本
 let isFillKsVer = true // 是否适配版本
@@ -51,7 +51,7 @@ ui.layout(
                   <horizontal padding="0 5"><text text="[支持版本]" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="抖音 version{{fillAppVersion}}" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="[支持版本APK下载地址]" textSize="13sp" /></horizontal>
-                  <horizontal padding="0 5"><text autoLink="all" text="https://m.wandoujia.com/apps/7461948/history_v220701?spm=aligames_platform_ug.wdj_seo.0.0.db567386YsQxKO" textSize="13sp" /></horizontal>
+                  <horizontal padding="0 5"><text autoLink="all" text="https://www.wandoujia.com/apps/7461948/history_v300101" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="[功能说明] " textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="退出脚本：点击音量上即可退出脚本" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="[任务介绍] " textSize="13sp" /></horizontal>
@@ -174,7 +174,7 @@ ui.layout(
                   <horizontal padding="0 5"><text text="[支持版本]" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="抖音 version{{fillAppVersion}}" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="[支持版本APK下载地址]" textSize="13sp" /></horizontal>
-                  <horizontal padding="0 5"><text autoLink="all" text="https://m.wandoujia.com/apps/7461948/history_v220701?spm=aligames_platform_ug.wdj_seo.0.0.db567386YsQxKO" textSize="13sp" /></horizontal>
+                  <horizontal padding="0 5"><text autoLink="all" text="https://www.wandoujia.com/apps/7461948/history_v300101" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="[功能说明] " textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text text="退出脚本：点击音量上即可退出脚本" textSize="13sp" /></horizontal>
                   <horizontal padding="0 5"><text id="title" text="[任务介绍] " textSize="13sp" /></horizontal>

@@ -1,9 +1,13 @@
 (() => {
   const openApp = require('../utils/openApp')
   const { toIndexPage, videoLikeCommentCollect } = require('../utils/douyinUtils')
-  const { strToNumber, randomRun, randomSwipe, randomSleep, liveSwipe } = require('../utils/util')
+  const { strToNumber, randomRun, randomSwipe, randomSleep, liveSwipe, clickContent } = require('../utils/util')
   const douyinClosePopup = require('../utils/douyinClosePopup')
   const storageDaliyConfig = require('../config/storageDaliy');
+  const {
+    liveClose, livePersonAmountWidget, liveUserCommentWidget, liveUserPopupTopWidget, liveUserPopupBottomWidget,
+    liveUserFocusWidget, liveUserFansWidget, liveUserAvatar, liveUserInfoAreaWidget, liveUserInfoPageWidget
+  } = require('../utils/widget')
 
   function main () {
     // 打开抖音App
@@ -36,8 +40,13 @@
       }
       // 进入直播间 
       toastLog("进入直播间")
-      desc("点击进入直播间按钮").visibleToUser().click()
-      startLive()
+      clickContent("点击进入直播间按钮", "desc")
+      // 判断是否在直播间界面，是则执行直播间脚本，否则继续下滑
+      if (text("更多直播").findOne(8000) && desc("更多面板 按钮").findOne(8000)) {
+        startLive()
+      } else {
+        startMission()
+      }
     } else {
       startVideo()
     }
@@ -80,6 +89,7 @@
   let liveUserWorkedList = [] // 已经处理过的用户
   let liveCommentWorkerList = [] // 已经处理过的用户评论
   let currLiveUserFocusAmount = 0 // 当前直播间已关注的用户
+  let loopLiveUserThreads = null
   function startLive () {
     currLiveUserFocusAmount = 0 // 每次进直播间重置一下
     randomSleep(1500)
@@ -113,10 +123,10 @@
       const liveMinPersonAmount = storageDaliyConfig.liveMinPersonAmount() ? Number(storageDaliyConfig.liveMinPersonAmount()) : 0
       let liveMaxPersonAmount = storageDaliyConfig.liveMaxPersonAmount() ? Number(storageDaliyConfig.liveMaxPersonAmount()) : 0
       if (liveMinPersonAmount || liveMaxPersonAmount) {
-        const nowLivePersonAmountEl = id("com.ss.android.ugc.aweme:id/lqe").findOne(5000)
+        const nowLivePersonAmountEl = id(livePersonAmountWidget).findOne(5000)
         const nowLivePersonAmount = nowLivePersonAmountEl ? Number(strToNumber(nowLivePersonAmountEl.text())) : ''
         log("直播间人数：", nowLivePersonAmount)
-        if (typeof nowLivePersonAmount === 'number') { 
+        if (typeof nowLivePersonAmount === 'number') {
           if (!liveMaxPersonAmount) liveMaxPersonAmount = nowLivePersonAmount + 1
           if (nowLivePersonAmount < liveMinPersonAmount || nowLivePersonAmount > liveMaxPersonAmount) {
             toastLog("切换直播间，直播间人数不符合设定")
@@ -133,21 +143,24 @@
     }
 
     // 循环获取用户评论
-    const loopLiveUserThreads = threads.start(function () {
+    loopLiveUserThreads = threads.start(function () {
       startLoopLiveUserMission()
     })
 
     const skipSeconds = random(Number(storageDaliyConfig.liveSkipMin()), Number(storageDaliyConfig.liveSkipMax()))
     toastLog(skipSeconds + '秒后切换下一个直播间')
     sleep(Number(skipSeconds) * 1000)
+    // 时间到了，关闭线程
+    loopLiveUserThreads.interrupt()
     const isOver = currVisitLiveAmount + 1 > liveAmount
     if (isOver) {
       startLive()
       return
     }
 
-    loopLiveUserThreads.interrupt()
     randomSleep(1000)
+    // 切换前判断用户详情页面是否还在访问，如果是则先关闭
+    closeUserInfoPage()
     // 切换前判断用户界面弹窗是否还在打开，如果是则先关闭
     closeUserDataPopup()
     randomSleep(1000)
@@ -173,13 +186,13 @@
         return
       }
 
-      const userEls = id("com.ss.android.ugc.aweme:id/text").find()
+      const userEls = id(liveUserCommentWidget).find()
       userEls.forEach((val) => {
         // 当日直播间关注判断
         if (isArriveDayLiveFocusLimit()) return
         // 当次直播间关注判断
         if (isArriveLiveFocusLimit()) return
-        
+
         const comment = val.text()
         const commentSplit = comment.split("：") // 分割评论内容
 
@@ -216,7 +229,14 @@
               return
             }
             // 检测用户是否达到设置的条件
-            const userData = findLiveUserData()
+            const userData = findLiveUserData() || {
+              focusAmount: 0,
+              fansAmount: 0,
+              userAge: 0,
+              userArea: 0,
+              userGender: 0,
+              userSchool: 0,
+            }
             log('用户：', commentSplit[0])
             log('关注数：', userData.focusAmount)
             log('粉丝数：', userData.fansAmount)
@@ -242,14 +262,22 @@
             log('性别', genderFlag, '关注数', focusFlag, '粉丝数', fansFlag, '区域', areaFlag)
             // 满足所有条件，关注
             if (genderFlag && focusFlag && fansFlag && areaFlag) {
-              if (desc("关注 按钮").exists() && randomRun(0.8)) {
-                desc("关注 按钮").click()
+              // 判断是否私密账号 如果私密账号则不关注了（暂不处理私密账号的逻辑）
+              if (text("关注").exists() && randomRun(0.8)) {
+                if (text("私密账号").exists()) {
+                  toastLog("私密账号不进行关注")
+                  closeUserInfoPage()
+                  return
+                }
+                text("关注").click()
                 currLiveUserFocusAmount++ // 当次直播间关注数+1
                 storageDaliyConfig.storageDaliy.put('dayLiveUserFocusAmount', Number(storageDaliyConfig.dayLiveUserFocusAmount()) + 1) // 当日直播间关注数+1
+              } else {
+                toastLog("几率触发不关注")
               }
             }
             randomSleep(1000)
-            closeUserDataPopup()
+            closeUserInfoPage()
             randomSleep(2000)
           }
         }
@@ -281,12 +309,23 @@
    * @returns 
    */
   function closeUserDataPopup () {
-    if (id("com.ss.android.ugc.aweme:id/q=p").visibleToUser().exists()) {
-      if (id("com.ss.android.ugc.aweme:id/re=").visibleToUser().exists()) {
-        id("com.ss.android.ugc.aweme:id/re=").visibleToUser().findOne().click()
+    if (id(liveUserPopupBottomWidget).visibleToUser().exists()) {
+      if (id(liveUserPopupTopWidget).visibleToUser().exists()) {
+        id(liveUserPopupTopWidget).visibleToUser().findOne().click()
         log("已关闭用户信息弹窗")
         randomSleep(500)
       }
+    }
+  }
+  /**
+   * 关闭用户访问页面
+   * @returns 
+   */
+  function closeUserInfoPage () {
+    if (id(liveUserInfoPageWidget).visibleToUser().exists() || desc("更多").exists()) {
+      back()
+      log("已关闭用户访问页面")
+      randomSleep(500)
     }
   }
   /**
@@ -297,23 +336,25 @@
     try {
       log("开始获取用户数据")
 
+      // 当前适配版本需要进入用户详情页 否则无法获取地区等信息
+      id(liveUserAvatar).visibleToUser().findOne().click()
+      randomSleep(1500)
+
       // 关注数、粉丝数
       let focusAmount = 0
       let fansAmount = 0
-      const focusFansEl = id("com.ss.android.ugc.aweme:id/ld9").visibleToUser().findOne(4000)
-      if (focusFansEl) {
-        const focusFansSplit = focusFansEl.text().split(' · ')
-        if (focusFansSplit.length === 2) {
-          focusAmount = Number(strToNumber(focusFansSplit[0].split(' 关注')[0]))
-          fansAmount = Number(strToNumber(focusFansSplit[1].split(' 粉丝')[0]))
-        }
-      }
-
       let userAge = ''
       let userArea = ''
       let userGender = ''
       let userSchool = ''
-      id("com.ss.android.ugc.aweme:id/m7c").visibleToUser().find().forEach((val) => {
+
+      if (id(liveUserFocusWidget).visibleToUser().exists()) {
+        focusAmount = id(liveUserFocusWidget).visibleToUser().findOne(3000).text()
+      }
+      if (id(liveUserFansWidget).visibleToUser().exists()) {
+        fansAmount = id(liveUserFansWidget).visibleToUser().findOne(3000).text()
+      }
+      id(liveUserInfoAreaWidget).visibleToUser().findOne(3000).children().forEach((val) => {
         const valText = val.text()
         if (valText.indexOf('岁') !== -1) {
           // 年龄
@@ -324,10 +365,9 @@
         } else if ((/小学|初中|中学|大学|学院|职业|毕业/g).test(valText)) {
           // 学校
           userSchool = valText
-        } else if (valText && valText.length <= 8) {
-          // 城市名一般不会太长 所以限制 8个字符之内
-          // 暂时默认为城市
-          userArea = valText
+        } else if (valText.indexOf('IP：') !== -1) {
+          // 城市名取 IP 归属地
+          userArea = valText.split('IP：')[1]
         }
       })
 
@@ -357,7 +397,11 @@
     // 退出前判断弹窗是否打开
     closeUserDataPopup()
     // 退出直播间
-    id("com.ss.android.ugc.aweme:id/chw").findOne().click()
+    try {
+      id(liveClose).findOne(5000).click()
+    } catch (error) {
+      desc("关闭").click()
+    }
     toastLog("退出直播间")
 
     // 重置数据

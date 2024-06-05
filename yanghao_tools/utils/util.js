@@ -97,7 +97,8 @@ function liveSwipe (time) {
   const width = device.width;
   const height = device.height;
 
-  smlMove(ramdomByFloat(460), ramdomByFloat(900), ramdomByFloat(480), ramdomByFloat(220), time);
+  // smlMove(ramdomByFloat(460), ramdomByFloat(900), ramdomByFloat(480), ramdomByFloat(220), time);
+  smlMove(ramdomByFloat(width / 2), ramdomByFloat(height / 1.5), ramdomByFloat(width / 2), ramdomByFloat(height / 4), time);
 }
 
 /**

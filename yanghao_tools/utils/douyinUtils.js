@@ -1,10 +1,15 @@
 const { strToNumber, randomRun, randomSwipe, randomSleep } = require('../utils/util')
+const {
+  homePageWidget, likeWidget, commentWidget, commentPopupWidget,
+  commentInputWidget, commentInputSendWidget, commentCloseWidget,
+  collectWidget
+} = require('../utils/widget')
 
 /**
  * 切换到APP首页界面
  */
 function toIndexPage () {
-  const homePage = id("com.ss.android.ugc.aweme:id/p+d").text("首页").findOne(10000)
+  const homePage = id(homePageWidget).text("首页").findOne(10000)
 
   if (homePage && homePage.parent()) {
     homePage.parent().click()
@@ -12,6 +17,23 @@ function toIndexPage () {
   } else {
     toastLog("首页按钮查找失败，退出脚本")
     exit()
+  }
+}
+
+/**
+ * 关闭评论弹窗
+ */
+function closeCommentPopup () {
+  // 先判断是否在评论输入弹层上，是的话则先返回
+  if (desc('插入图片').exists() && desc('at').exists() && desc('表情').exists()) {
+    back()
+    randomSleep(300)
+  }
+  
+  // 然后判断输入框评论列表是否存在，存在就关闭
+  if (id(commentPopupWidget).exists()) {
+    id(commentCloseWidget).findOne().click()
+    randomSleep(1000)
   }
 }
 
@@ -54,10 +76,7 @@ function videoLikeCommentCollect (params, callback) {
   // 时间到了，关闭线程
   likeCommentCollectThreads.interrupt()
   // 判断评论框有没有被打开，有的话先关闭
-  if (id("com.ss.android.ugc.aweme:id/fm9").exists()) {
-    id("com.ss.android.ugc.aweme:id/back_btn").findOne().click()
-    randomSleep(1000)
-  }
+  closeCommentPopup()
   toastLog('切换视频')
   randomSwipe()
   randomSleep(1000)
@@ -81,7 +100,7 @@ function videoLikeCommentCollect (params, callback) {
 function startLike (params) {
   try {
     log("=====开始判断是否点赞=====")
-    const likeEl = id("com.ss.android.ugc.aweme:id/dun").visibleToUser().findOne(3000)
+    const likeEl = id(likeWidget).visibleToUser().findOne(3000)
     let isUnlike = true // 当前是否未点赞
     let likeAmount = 0
     if (likeEl) {
@@ -121,7 +140,7 @@ function startLike (params) {
 function startComment (params) {
   try {
     log("=====开始判断是否评论=====")
-    const commentEl = id("com.ss.android.ugc.aweme:id/ct4").visibleToUser().findOne(3000)
+    const commentEl = id(commentWidget).visibleToUser().findOne(3000)
     let commentAmount = 0
     if (commentEl) {
       const descList = commentEl.desc().split('，')
@@ -144,13 +163,17 @@ function startComment (params) {
         const commentList = params.commentContent().split('\n')
         let comment = commentList.length > 0 ? commentList[random(0, commentList.length - 1)] : defaultComment
         comment = !!comment ? comment : defaultComment
-        id("com.ss.android.ugc.aweme:id/cp+").findOne().setText(comment)
+
+        // 当前版本直接 setText 不会显示 发送 按钮，所以要先点击唤醒另外一个输入框
+        id(commentInputWidget).findOne().click()
+        id(commentInputWidget).findOne().setText(comment)
         randomSleep(500)
+        back()
         // 发送
-        id("com.ss.android.ugc.aweme:id/cr7").findOne().click()
+        id(commentInputSendWidget).findOne().click()
         randomSleep(200)
         // 返回
-        id("com.ss.android.ugc.aweme:id/back_btn").findOne().click()
+        id(commentCloseWidget).findOne().click()
         toastLog("评论成功")
       } else {
         log("不需要评论")
@@ -178,7 +201,7 @@ function startComment (params) {
 function startCollect (params) {
   try {
     log("=====开始判断是否收藏=====")
-    const collectEl = id("com.ss.android.ugc.aweme:id/cmt").visibleToUser().findOne(3000)
+    const collectEl = id(collectWidget).visibleToUser().findOne(3000)
     let isUnCollect = true // 当前是否未收藏
     let collectAmount = 0
     if (collectEl) {

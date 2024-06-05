@@ -4,6 +4,10 @@
   const { randomSleep } = require('../utils/util')
   const douyinClosePopup = require('../utils/douyinClosePopup')
   const storageNewConfig = require('../config/storageNew');
+  const {
+    searchContainerWidget, searchInputWidget, searchButtonWidget,
+    searchTagWidget, searchVideoWidget,
+  } = require('../utils/widget')
 
   function main () {
     // 打开抖音App
@@ -32,7 +36,10 @@
    */
   function searchToVideo () {
     // 点击搜索图标
-    id("com.ss.android.ugc.aweme:id/fo7").findOne().click()
+    // 因为分析搜索控件，没有找到对应的 id，所以只能找外层，找出子元素，从而找到搜索控件
+    const searchContainer = id(searchContainerWidget).findOne().children()
+    const search = searchContainer[searchContainer.length - 1]
+    search.click()
     randomSleep(500)
     // 输入关键词
     let keyword = storageNewConfig.searchContent()
@@ -40,15 +47,15 @@
     if (storageNewConfig.videoClassify()) {
       keyword += ' ' + storageNewConfig.videoClassify()
     }
-    id("com.ss.android.ugc.aweme:id/et_search_kw").findOne().setText(keyword)
+    id(searchInputWidget).findOne().setText(keyword)
     randomSleep(500)
     // 搜索
-    const searchEl = id("com.ss.android.ugc.aweme:id/st0").findOne()
+    const searchEl = id(searchButtonWidget).findOne()
     log("获取到搜索按钮的区域", searchEl.bounds().centerX(), searchEl.bounds().centerY())
     click(searchEl.bounds().centerX(), searchEl.bounds().centerY())
     randomSleep(500)
     // 点击视频菜单
-    id("android:id/text1").text("视频").findOne().parent().click()
+    id(searchTagWidget).text("视频").findOne().parent().click()
     randomSleep(1000)
     // 进入视频分类
     // if (storageNewConfig.videoClassify()) {
@@ -72,7 +79,7 @@
    * 点击第一个视频
    */
   function clickFirstVideo () {
-    const video = id("com.ss.android.ugc.aweme:id/n=-").visibleToUser().findOne(5000)
+    const video = id(searchVideoWidget).visibleToUser().findOne(5000)
     if (!video) {
       toastLog("找不到视频控件，脚本已停止，请手动重新运行")
       exit()
@@ -100,6 +107,6 @@
       startVideo()
     })
   }
-  
+
   module.exports = main
 })();
